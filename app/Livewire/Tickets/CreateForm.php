@@ -7,16 +7,19 @@ use Illuminate\Http\Request;
 use Livewire\Component;
 use Livewire\Attributes\Validate;
 use Livewire\WithFileUploads;
+use App\Models\Category;
 
 class CreateForm extends Component
 {
     use WithFileUploads;
 
+    #[Validate('required')]
     public $country;
     public $priority;
 
-    public $first_category;
+    public $categories;
 
+    public $first_category;
     public $second_categories;
     public $second_category;
 
@@ -50,6 +53,7 @@ class CreateForm extends Component
 
     public function mount() {
         $this->showFields = false;
+        $this->categories = Category::where('parent_id', null)->get();
     }
 
     public function changeFirstCategory($value) {
@@ -60,27 +64,20 @@ class CreateForm extends Component
             $this->showFields = false;
             $this->second_categories = null;
             $this->third_categories = null;
+        } else {
+            $this->first_category = Category::find($value);
+            $this->second_categories = Category::where('parent_id', $this->first_category->id)->get();
         }
-
-        if ($value == 1) {
-            $this->first_category = 'Incident';
-        }
-
-        if ($value == 2) {
-            $this->first_category = 'General Request';
-        }
-
-        $this->second_categories = ['First Category', 'Second Category', 'Third Category'];
     }
 
     public function changeSecondCategory($value) {
         if($value == 0){
             $this->third_category = null;
-            $this->showFields = false;
             $this->third_categories = null;
+            $this->showFields = false;
         } else {
-            $this->second_category = $value;
-            $this->third_categories = ['First Category', 'Second Category', 'Third Category'];
+            $this->second_category = Category::find($value);
+            $this->third_categories = Category::where('parent_id', $this->second_category->id)->get();
         }
     }
 
@@ -100,24 +97,7 @@ class CreateForm extends Component
             $this->attachment = $file;
         }
 
-        // dd([
-        //     'country' => $this->country,
-        //     'priority' => $this->priority,
-        //     'first_category' => $this->first_category,
-        //     'second_category' => $this->second_category,
-        //     'third_category' => $this->third_category,
-        //     'attachment' => $this->attachment ?? '',
-        //     'comment' => $this->comment,
-        //     'customer_name' => $this->customer_name,
-        //     'customer_mobile' => $this->customer_mobile,
-        //     'customer_email' => $this->customer_email,
-        //     'issue' => $this->issue,
-        //     'site' => $this->site,
-        //     'anydesk_id' => $this->anydesk_id,
-        //     'customer_id' => $this->customer_id,
-        //     'extension_number' => $this->extension_number,
-        //     'inquiry' => $this->inquiry
-        // ]);
+        $this->validate();
 
         Ticket::create([
             'country' => $this->country,

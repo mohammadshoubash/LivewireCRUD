@@ -8,6 +8,7 @@
             @yield('title', 'Laravel Livewire')
         </title>
         <link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}">
+
         @yield('styles')
         @livewireStyles()
     </head>

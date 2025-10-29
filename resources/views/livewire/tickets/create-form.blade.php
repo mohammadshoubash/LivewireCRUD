@@ -42,9 +42,31 @@
         </div>
     </div>
 
+    {{-- Session Success --}}
+
     @if (session()->has('success'))
         <div class="mt-4 alert alert-success">
             {{ session('success') }}
+        </div>
+    @endif
+
+    {{-- Session Error --}}
+
+    @if (session()->has('error'))
+        <div class="mt-4 alert alert-danger">
+            {{ session('error') }}
+        </div>
+    @endif
+
+    {{-- Errors --}}
+
+    @if($errors->any())
+        <div class="mt-4 alert alert-danger">
+            <ul>
+                @foreach ($errors->all() as $error)
+                    <li>{{ $error }}</li>
+                @endforeach
+            </ul>
         </div>
     @endif
 
@@ -94,8 +116,7 @@
                                 <option value="Armenia">Armenia</option>
                                 <option value="American Samoa">American Samoa</option>
                                 <option value="Antarctica">Antarctica</option>
-                                <option value="French Southern and Antarctic Lands">French Southern and Antarctic Lands
-                                </option>
+                                <option value="French Southern and Antarctic Lands">French Southern and Antarctic Lands</option>
                                 <option value="Antigua and Barbuda">Antigua and Barbuda</option>
                                 <option value="Australia">Australia</option>
                                 <option value="Austria">Austria</option>
@@ -373,8 +394,9 @@
                             <select id="first-category" class="form-select" aria-label="Default select example"
                                 wire:change="changeFirstCategory($event.target.value)">
                                 <option value="0">---</option>
-                                <option value="1">Incident</option>
-                                <option value="2">General Request</option>
+                                @foreach ($categories as $category)
+                                    <option value="{{ $category->id }}">{{ $category->name }}</option>
+                                @endforeach
                             </select>
                         </div>
 
@@ -383,12 +405,12 @@
                                 Second Category*
                             </label>
 
-                            <select id="second-category" class="form-select" aria-label="Default select example" @if($first_category == null || $first_category == 0) disabled @endif
+                            <select id="second-category" class="form-select" aria-label="Default select example" @if($first_category == null) disabled @endif
                                 wire:change="changeSecondCategory($event.target.value)">
                                 <option value="0" @if($second_category == null) selected @endif>---</option>
-                                @if ($second_categories != null)
-                                    @foreach ($second_categories as $second_category)
-                                        <option value="{{ $second_category }}">{{ $second_category }}</option>
+                                @if ($second_categories)
+                                    @foreach ($second_categories as $category)
+                                        <option value="{{ $category->id }}">{{ $category->name }}</option>
                                     @endforeach
                                 @endif
                             </select>
@@ -399,12 +421,12 @@
                                 Third Category*
                             </label>
 
-                            <select id="third-category" class="form-select" aria-label="Default select example" @if($first_category == null || $second_category == 0 || $second_category == null) disabled @endif
+                            <select id="third-category" class="form-select" aria-label="Default select example" @if($first_category == null || $second_category == null) disabled @endif
                                 wire:change="changeThirdCategory($event.target.value)">
                                 <option value="0" @if($third_category == null) selected @endif>---</option>
-                                @if ($third_categories != null)
+                                @if ($third_categories)
                                     @foreach ($third_categories as $third_category)
-                                        <option value="{{ $third_category }}">{{ $third_category }}</option>
+                                        <option value="{{ $third_category->id }}">{{ $third_category->name }}</option>
                                     @endforeach
                                 @endif
                             </select>
@@ -446,7 +468,7 @@
                                     Issues*
                                 </label>
 
-                                <select id="multiple-select" class="form-select" wire:change="changeIssue($event.target.value)">
+                                <select id="multiple-select" class="form-select" wire:change="changeIssue($event.target.value)" multiple>
                                     <option value="">---</option>
                                     <option value="System Down">System Down</option>
                                     <option value="An Error is showing">An Error is showing</option>
