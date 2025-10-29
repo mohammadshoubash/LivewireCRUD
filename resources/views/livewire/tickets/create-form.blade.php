@@ -10,8 +10,12 @@
             font-size: 1rem;
         }
 
-        label{
+        label {
             margin-bottom: 15px;
+        }
+
+        hr {
+            margin-bottom: 25px;
         }
     </style>
 @endsection
@@ -37,6 +41,12 @@
             </div>
         </div>
     </div>
+
+    @if (session()->has('success'))
+        <div class="mt-4 alert alert-success">
+            {{ session('success') }}
+        </div>
+    @endif
 
     <div class="container p-4 bg-white rounded shadow">
         <div id="gradient" class="py-4 text-center rounded">
@@ -362,7 +372,7 @@
 
                             <select id="first-category" class="form-select" aria-label="Default select example"
                                 wire:change="changeFirstCategory($event.target.value)">
-                                <option>---</option>
+                                <option value="0">---</option>
                                 <option value="1">Incident</option>
                                 <option value="2">General Request</option>
                             </select>
@@ -373,9 +383,14 @@
                                 Second Category*
                             </label>
 
-                            <select id="second-category" class="form-select" aria-label="Default select example"
+                            <select id="second-category" class="form-select" aria-label="Default select example" @if($first_category == null || $first_category == 0) disabled @endif
                                 wire:change="changeSecondCategory($event.target.value)">
-                                <option>---</option>
+                                <option value="0" @if($second_category == null) selected @endif>---</option>
+                                @if ($second_categories != null)
+                                    @foreach ($second_categories as $second_category)
+                                        <option value="{{ $second_category }}">{{ $second_category }}</option>
+                                    @endforeach
+                                @endif
                             </select>
                         </div>
 
@@ -384,9 +399,14 @@
                                 Third Category*
                             </label>
 
-                            <select id="third-category" class="form-select" aria-label="Default select example"
+                            <select id="third-category" class="form-select" aria-label="Default select example" @if($first_category == null || $second_category == 0 || $second_category == null) disabled @endif
                                 wire:change="changeThirdCategory($event.target.value)">
-                                <option>---</option>
+                                <option value="0" @if($third_category == null) selected @endif>---</option>
+                                @if ($third_categories != null)
+                                    @foreach ($third_categories as $third_category)
+                                        <option value="{{ $third_category }}">{{ $third_category }}</option>
+                                    @endforeach
+                                @endif
                             </select>
                         </div>
                     </div>
@@ -394,22 +414,155 @@
                     <h2>Ticket info</h2>
                     <hr />
 
-                    <div id="">
+                    @if ($showFields)
+                        {{-- First Row --}}
+                        <div class="mb-4 row">
+                            <div class="d-flex flex-column col">
+                                <label for="customerName" class="form-label">Customer Name</label>
+
+                                <input type="text" wire:model.defer="customer_name"
+                                    class="form-control form-input" id="customerName" style="background: white;">
+                            </div>
+
+                            <div class="d-flex flex-column col">
+                                <label for="customerMobile" class="form-label">Customer Mobile</label>
+
+                                <input type="text" wire:model.defer="customer_mobile"
+                                    class="form-control form-input" id="customerMobile" style="background: white;">
+                            </div>
+
+                            <div class="d-flex flex-column col">
+                                <label for="customerEmail" class="form-label">Customer Email</label>
+
+                                <input type="text" wire:model.defer="customer_email"
+                                    class="form-control form-input" id="customerEmail" style="background: white;">
+                            </div>
+                        </div>
+
+                        {{-- Second Row --}}
+                        <div class="mb-4 row">
+                            <div class="d-flex flex-column col">
+                                <label for="multiple-select" class="form-label">
+                                    Issues*
+                                </label>
+
+                                <select id="multiple-select" class="form-select" wire:change="changeIssue($event.target.value)">
+                                    <option value="">---</option>
+                                    <option value="System Down">System Down</option>
+                                    <option value="An Error is showing">An Error is showing</option>
+                                    <option value="Unable to access">Unable to access</option>
+                                    <option value="Incorrect Behavior/Data">Incorrect Behavior/Data</option>
+                                    <option value="Wrong /Empty Data">Wrong /Empty Data</option>
+                                    <option value=" Missing Data/ Report"> Missing Data/ Report</option>
+                                    <option value="I-Bot">I-Bot</option>
+                                </select>
+                            </div>
+
+                            <div class="d-flex flex-column col">
+                                <label for="site" class="form-label">Site*</label>
+
+                                <select id="site" class="form-select" aria-label="Default select example"
+                                    wire:change="changeSite($event.target.value)">
+                                    <option value="">---</option>
+                                    <option value="Amman Madina st">Amman Madina st</option>
+                                    <option value="Amman University St">Amman University St</option>
+                                    <option value="Irbid">Irbid</option>
+                                    <option value="Sulimaniyah">Sulimaniyah</option>
+                                    <option value="Ghirnatah">Ghirnatah</option>
+                                    <option value="KAEC">KAEC</option>
+                                    <option value="Erbil">Erbil</option>
+                                    <option value="Al-Rabwa">Al-Rabwa</option>
+                                    <option value="India">India</option>
+                                </select>
+                            </div>
+
+                            <div class="d-flex flex-column col">
+                                <label for="anydesk_id" class="form-label">AnyDesk ID*</label>
+
+                                <input type="number" wire:model.defer="anydesk_id" class="form-control form-input"
+                                    id="anydesk_id" style="background: white;">
+                            </div>
+                        </div>
+
+                        {{-- Third Row --}}
+                        <div class="mb-4 row">
+                            <div class="d-flex flex-column col">
+                                <label for="customer_id" class="form-label">Customer ID*</label>
+
+                                <input type="text" wire:model.defer="customer_id" class="form-control form-input"
+                                    id="customer_id" style="background: white;">
+                            </div>
+
+                            <div class="d-flex flex-column col">
+                                <label for="extension_number" class="form-label">Phone / Extension Number*</label>
+
+                                <input type="number" wire:model.defer="extension_number"
+                                    class="form-control form-input" id="extension_number" style="background: white;">
+                            </div>
+
+                            <div class="d-flex flex-column col">
+                                <label for="inquiry" class="form-label">Inquiry</label>
+
+                                <select id="inquiry" class="form-select" aria-label="Default select example"
+                                    wire:change="changeInquiry($event.target.value)">
+                                    <option value="">---</option>
+                                    <option value="User disconnected">User disconnected</option>
+                                    <option value="Export / Upload data">Export / Upload data</option>
+                                    <option value="Add category">Add category</option>
+                                    <option value="Delete category">Delete category</option>
+                                    <option value="Update on filter dropdown list">Update on filter dropdown list
+                                    </option>
+                                    <option value="Add new filter dropdown list">Add new filter dropdown list</option>
+                                    <option value="Edit label name">Edit label name</option>
+                                    <option value="Edit input type">Edit input type</option>
+                                    <option value="Send assets confirmation email">Send assets confirmation email
+                                    </option>
+                                    <option value="Give access to assessment">Give access to assessment</option>
+                                    <option value="Add User">Add User</option>
+                                    <option value="User email issue">User email issue</option>
+                                    <option value="Update User Info">Update User Info</option>
+                                    <option value="Delete/deactivate Users">Delete/deactivate Users</option>
+                                    <option value="User blocked issue">User blocked issue</option>
+                                    <option value="Change/add user access or privilege">Change/add user access or
+                                        privilege</option>
+                                    <option value="Reset password issue">Reset password issue</option>
+                                    <option value="Export issues">Export issues</option>
+                                    <option value="Unable to submit">Unable to submit</option>
+                                    <option value="Unable to filter">Unable to filter</option>
+                                    <option value="Wrong data after submit">Wrong data after submit</option>
+                                    <option value="Wrong data after filter">Wrong data after filter</option>
+                                    <option value="Wrong / Missing access">Wrong / Missing access</option>
+                                    <option value="Delete File/Data">Delete File/Data</option>
+                                    <option value="Survey issue">Survey issue</option>
+                                    <option value="Requests &amp; Approvals">Requests &amp; Approvals</option>
+                                    <option value="Dashboard Issue">Dashboard Issue</option>
+                                    <option value="Reports issue">Reports issue</option>
+                                    <option value="Add/Delete Question">Add/Delete Question</option>
+                                    <option value="New SMS">New SMS</option>
+                                    <option value="New Email">New Email</option>
+                                    <option value="New Report">New Report</option>
+                                    <option value="I-Bot">I-Bot</option>
+                                </select>
+                            </div>
+                        </div>
+                    @else
                         <p class="mb-4">
                             This will be enabled after choosing categories
                         </p>
-                    </div>
+                    @endif
 
-                    <h2>Attachments</h2>
+                    <h2>Attachment</h2>
                     <hr />
-                    <input type="file" class="mb-4 form-control" wire:model="attachments" />
+                    <input type="file" name="attachment" class="mb-4 form-control" wire:model="attachment" />
 
                     <h2>Comment</h2>
                     <hr />
 
-                    <textarea style="height: 100px" class="form-control" placeholder="Leave a comment here" name="comment" id="comment" rows="10"></textarea>
+                    <textarea style="height: 100px" class="form-control" placeholder="Leave a comment here" wire:model='comment'
+                        name="comment" id="comment" rows="10"></textarea>
 
-                    <button style="background-color: #00a34e; font-size: 15px; height: 47px; font-family: inherit;" class="mt-3 btn btn-success">Create new ticket</button>
+                    <button style="background-color: #00a34e; font-size: 15px; height: 47px; font-family: inherit;"
+                        class="mt-3 btn btn-success">Create new ticket</button>
                 </div>
             </form>
         </div>
