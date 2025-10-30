@@ -9,6 +9,20 @@
         </title>
         <link rel="stylesheet" href="{{ asset('assets/css/styles.css') }}">
 
+        <style>
+            * {
+                font-family: Tahoma;
+            }
+
+            label {
+                color: rgb(100, 100, 100);
+            }
+
+            h2 {
+                font-weight: bold;
+            }
+        </style>
+
         @yield('styles')
         @livewireStyles()
     </head>

@@ -468,8 +468,8 @@
                                     Issues*
                                 </label>
 
-                                <select id="multiple-select" class="form-select" wire:change="changeIssue($event.target.value)" multiple>
-                                    <option value="">---</option>
+                                <select class="form-select" multiple size="1" aria-label="multiple select example" wire:model="issues">
+                                    <option value="" selected>---</option>
                                     <option value="System Down">System Down</option>
                                     <option value="An Error is showing">An Error is showing</option>
                                     <option value="Unable to access">Unable to access</option>
@@ -584,9 +584,17 @@
                         name="comment" id="comment" rows="10"></textarea>
 
                     <button style="background-color: #00a34e; font-size: 15px; height: 47px; font-family: inherit;"
-                        class="mt-3 btn btn-success">Create new ticket</button>
+                        class="mt-3 btn btn-success" onclick="fn()">Create new ticket</button>
                 </div>
             </form>
         </div>
     </div>
 </div>
+
+@section('scripts')
+    <script>
+        function fn() {
+            window.scrollTo(0, 0)
+        }
+    </script>
+@endsection

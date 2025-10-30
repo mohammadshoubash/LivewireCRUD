@@ -13,6 +13,20 @@ class Ticket extends Model
         'second_category',
         'third_category',
         'attachment',
-        'comment'
+        'comment',
+
+        'customer_name',
+        'customer_mobile',
+        'customer_email',
+        'site',
+        'anydesk_id',
+        'customer_id',
+        'extension_number',
+        'inquiry'
     ];
+
+    public function issues()
+    {
+        return $this->hasMany(Issue::class);
+    }
 }

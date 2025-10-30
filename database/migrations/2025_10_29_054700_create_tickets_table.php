@@ -20,6 +20,14 @@ return new class extends Migration
             $table->string('third_category');
             $table->string('attachment');
             $table->string('comment');
+            $table->string('customer_name');
+            $table->string('customer_mobile');
+            $table->string('customer_email');
+            $table->string('site');
+            $table->integer('anydesk_id');
+            $table->string('customer_id');
+            $table->integer('extension_number');
+            $table->string('inquiry');
             $table->timestamps();
         });
     }

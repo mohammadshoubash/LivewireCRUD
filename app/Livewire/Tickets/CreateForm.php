@@ -8,13 +8,19 @@ use Livewire\Component;
 use Livewire\Attributes\Validate;
 use Livewire\WithFileUploads;
 use App\Models\Category;
+use App\Models\Issue;
 
 class CreateForm extends Component
 {
     use WithFileUploads;
 
+    // #[Validate('mimes:jpg,jpeg,png|max:1024')]
+    public $attachment;
+
     #[Validate('required')]
     public $country;
+
+    #[Validate('required')]
     public $priority;
 
     public $categories;
@@ -41,19 +47,19 @@ class CreateForm extends Component
     public $customer_email;
 
     #[Validate('required')]
-    public $issue;
+    public $issues;
     public $site;
     public $anydesk_id;
     public $customer_id;
     public $extension_number;
     public $inquiry;
 
-    #[Validate('mimes:jpg,jpeg,png|max:1024')]
-    public $attachment;
+
 
     public function mount() {
         $this->showFields = false;
         $this->categories = Category::where('parent_id', null)->get();
+        $this->issues = [];
     }
 
     public function changeFirstCategory($value) {
@@ -99,7 +105,7 @@ class CreateForm extends Component
 
         $this->validate();
 
-        Ticket::create([
+        $ticket = Ticket::create([
             'country' => $this->country,
             'priority' => $this->priority,
             'first_category' => $this->first_category,
@@ -111,13 +117,19 @@ class CreateForm extends Component
             'customer_name' => $this->customer_name,
             'customer_mobile' => $this->customer_mobile,
             'customer_email' => $this->customer_email,
-            'issue' => $this->issue,
             'site' => $this->site,
             'anydesk_id' => $this->anydesk_id,
             'customer_id' => $this->customer_id,
             'extension_number' => $this->extension_number,
             'inquiry' => $this->inquiry
         ]);
+
+        foreach ($this->issues as $issue) {
+            Issue::create([
+                'name' => $issue,
+                'ticket_id' => $ticket->id
+            ]);
+        }
 
         redirect()->to('/tickets/create')->with('success', 'Ticket created successfully');
     }
@@ -132,10 +144,6 @@ class CreateForm extends Component
 
     public function changeInquiry($value){
         $this->inquiry = $value;
-    }
-
-    public function changeIssue($value){
-        $this->issue = $value;
     }
 
     public function render()
